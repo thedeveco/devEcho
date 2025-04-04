@@ -1,23 +1,30 @@
 import discord
 import os
+from discord.ext import commands
 from dotenv import load_dotenv
+import importlib
 
 load_dotenv()
-TOKEN = os.getenv('BotToken')
-
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print(f'Logged in as {self.user}')
-
-    async def on_message(self, message):
-        if message.author == self.user:
-            return
-
-        if message.content.startswith('!ping'):
-            await message.channel.send('Pong! :ping_pong:')
+TOKEN = os.getenv("BotToken")
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = MyClient(intents=intents)
-client.run(TOKEN)
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
+
+    for filename in os.listdir("./src/commands"):
+        if filename.endswith(".py"):
+            module = f"src.commands.{filename[:-3]}"
+            importlib.import_module(module).setup(bot)
+    
+    try:
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} command(s).")
+    except Exception as e:
+        print(f"Error syncing commands: {e}")
+
+bot.run(TOKEN)
