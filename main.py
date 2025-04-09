@@ -4,6 +4,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import importlib
 from database.profile import profiledb
+import datetime
 
 load_dotenv()
 TOKEN = os.getenv("BotToken")
@@ -12,6 +13,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
+bot.start_time = datetime.datetime.utcnow()
 
 @bot.event
 async def on_ready():
