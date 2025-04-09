@@ -1,3 +1,10 @@
+# Environment
 .env
+.vscode
 venv
+
+# Folders
 __pycache__/
+
+# Databases
+profile.db
